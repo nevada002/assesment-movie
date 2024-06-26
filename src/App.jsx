@@ -5,6 +5,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<MovieList />} />
+      {/* <Route path="/:movieId" element={<MovieDetails />} /> */}
     </Routes>
   );
 }

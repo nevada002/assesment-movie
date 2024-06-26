@@ -53,7 +53,7 @@ export default function MovieList() {
     const renderMovieList = () => {
         return popularMovies.map((movie, index) => {
             return (
-                <div className={`${styles.MovieWrapper} key={index}`}>
+                <div className={styles.MovieWrapper} key={index}>
                     <div className={styles.MovieTitle}>{movie.title}</div>
                     <img className={styles.MovieImage} src={`${process.env.REACT_APP_BASEIMGURL}/${movie.poster_path}`} alt="Movie Poster" />
                     <div className={styles.MovieDate}>{movie.release_date}</div>
@@ -66,7 +66,7 @@ export default function MovieList() {
     return (
         <div className={styles.App}>
             <div className={styles.AppHeader}>
-                <h1>Movie Search</h1>
+                <h1>Assesment TMBD</h1>
             </div>
             <div className={styles.MovieSearchContainer}>
                 <input
