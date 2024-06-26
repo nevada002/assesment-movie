@@ -1,0 +1,81 @@
+/* MovieList.module.css */
+.App {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.AppHeader {
+    margin-bottom: 20px;
+}
+
+.MovieSearchContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.MovieSearchInput {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+    flex-grow: 1;
+}
+
+.MovieSearchClear {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+.MovieListContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.MovieWrapper {
+    margin-bottom: 20px;
+    width: 30%;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.MovieTitle {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.MovieImage {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.MovieDate,
+.MovieRate {
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.ErrorMessage,
+.LoadingMessage {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.LoadingIcon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 5px solid #ddd;
+    border-top-color: #ccc;
+    animation: spin 1
+}

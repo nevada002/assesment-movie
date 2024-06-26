@@ -1,53 +1,94 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getMovieList, searchMovie } from '../api';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import styles from './MovieList.module.css'
 
 export default function MovieList() {
     const [popularMovies, setPopularMovies] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
 
     useEffect(() => {
-        getMovieList().then((results) => setPopularMovies(results));
+        fetchPopularMovies();
     }, []);
 
-    const PopularMovieList = () => {
-        return popularMovies.map((movie, i) => {
-            return (
-                <div className="Movie-wrapper" key={i}>
-                    <div className="Movie-title">{movie.title}</div>
-                    <img className="Movie-image" src={`${process.env.REACT_APP_BASEIMGURL}/${movie.poster_path}`} alt="Movie Poster" />
-                    <div className="Movie-date">{movie.release_date}</div>
-                    <div className="Movie-rate">{movie.vote_average}</div>
-                </div>
-            )
-        })
-    }
-
-    const search = async (q) => {
-        if (q.length === 0) {
-            const results = await getMovieList();
-            setPopularMovies(results);
-            return;
-        }
-
-        if (q.length > 3) {
-            const query = await searchMovie(q)
-            setPopularMovies(query.results)
+    const fetchPopularMovies = async () => {
+        try {
+            setIsLoading(true);
+            const results = await getMovieList(currentPage);
+            setPopularMovies(prevMovies => [...prevMovies, ...results]);
+            setCurrentPage(prevPage => prevPage + 1);
+            setIsLoading(false);
+        } catch (error) {
+            console.error(error);
+            setHasError(true);
         }
     };
 
+    const handleSearch = async (e) => {
+        e.preventDefault()
+        const query = e.target.value;
+        setSearchTerm(query);
+
+        if (query.length === 0) {
+            return fetchPopularMovies();
+        }
+
+        if (query.length > 3) {
+            try {
+                setIsLoading(true);
+                const results = await searchMovie(query, 1);
+                setPopularMovies(results.results);
+                setCurrentPage(1);
+                setIsLoading(false);
+            } catch (error) {
+                console.error(error);
+                setHasError(true);
+            }
+        }
+    };
+
+    const renderMovieList = () => {
+        return popularMovies.map((movie, index) => {
+            return (
+                <div className={`${styles.MovieWrapper} key={index}`}>
+                    <div className={styles.MovieTitle}>{movie.title}</div>
+                    <img className={styles.MovieImage} src={`${process.env.REACT_APP_BASEIMGURL}/${movie.poster_path}`} alt="Movie Poster" />
+                    <div className={styles.MovieDate}>{movie.release_date}</div>
+                    <div className={styles.MovieRate}>{movie.vote_average}</div>
+                </div>
+            );
+        });
+    };
+
     return (
-        <div className='App'>
-            <div className="App-header">
-                <h1>Assesment TMBD</h1>
+        <div className={styles.App}>
+            <div className={styles.AppHeader}>
+                <h1>Movie Search</h1>
             </div>
-            <input
-                type="text"
-                placeholder="Cari Film..."
-                className="Movie-search"
-                onChange={({ target }) => search(target.value)}
-            />
-            <div className="Movie-container">
-                <PopularMovieList />
+            <div className={styles.MovieSearchContainer}>
+                <input
+                    type="text"
+                    placeholder="Search Movies..."
+                    className={styles.MovieSearchInput}
+                    value={searchTerm}
+                    onChange={handleSearch}
+                />
+                <button className={styles.MovieSearchClear} onClick={() => setSearchTerm('')}>Clear</button>
             </div>
+            {hasError && <div className={styles.ErrorMessage}>An error occurred. Please try again.</div>}
+            {isLoading && <div className={styles.LoadingMessage}>Loading...</div>}
+            <InfiniteScroll
+                dataLength={popularMovies.length}
+                next={fetchPopularMovies}
+                hasMore={true}
+                loader={<div className={styles.LoadingIcon}></div>}
+                className={styles.MovieListContainer}
+            >
+                {renderMovieList()}
+            </InfiniteScroll>
         </div>
     );
 }
