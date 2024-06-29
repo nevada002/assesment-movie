@@ -23,5 +23,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 ### I use .env in the root directory to list API links and API Keys. I recommend using each API Key. Here are the API links for data and images. Sorry if I didn't upload the .env to GitHub because it's private
 
 REACT_APP_BASEURL="Your Link"
+
 REACT_APP_BASEIMGURL="Your Link"
+
 REACT_APP_APIKEY="Your Key"
