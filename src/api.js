@@ -7,7 +7,7 @@ export const getMovieList = async (page) => {
 
 export const searchMovie = async (q, page) => {
     const search = await axios.get(`${process.env.REACT_APP_BASEURL}/search/movie?query=${q}&page=${page}&api_key=${process.env.REACT_APP_APIKEY}`)
-    return search.data
+    return search.data.results
 }
 
 export const getMovieDetails = async (id) => {

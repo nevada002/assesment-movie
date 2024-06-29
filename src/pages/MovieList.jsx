@@ -10,6 +10,7 @@ export default function MovieList() {
     const [currentPage, setCurrentPage] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
     const [hasError, setHasError] = useState(false)
+    const [isSearch, setIsSearch] = useState(false)
 
     const debouncedSearchTerm = useRef('')
 
@@ -30,33 +31,43 @@ export default function MovieList() {
         }
     }
 
+    const fetchSearchMovies = async (query) => {
+        setIsLoading(true)
+        debouncedSearchTerm.current = setTimeout(async () => {
+            try {
+                const results = await searchMovie(query, currentPage)
+                setPopularMovies(prevMovies => [...prevMovies, ...results])
+                setCurrentPage(prevPage => prevPage + 1)
+                setIsLoading(false)
+            } catch (error) {
+                console.error(error)
+                setHasError(true)
+            }
+        }, 1000)
+    }
+
     const handleSearch = async (e) => {
         e.preventDefault()
         const query = e.target.value
-
+        if (query !== searchTerm) {
+            setHasError(false)
+            setCurrentPage(1)
+        }
         setSearchTerm(query)
 
         clearTimeout(debouncedSearchTerm.current)
 
         if (query.length === 0) {
+            setIsSearch(false)
             setPopularMovies([])
             setCurrentPage(1)
-            return fetchPopularMovies()
+            await fetchPopularMovies()
         }
 
         if (query.length >= 3) {
-            debouncedSearchTerm.current = setTimeout(async () => {
-                try {
-                    setIsLoading(true)
-                    const results = await searchMovie(query, 1)
-                    setPopularMovies(results.results)
-                    setCurrentPage(1)
-                    setIsLoading(false)
-                } catch (error) {
-                    console.error(error)
-                    setHasError(true)
-                }
-            }, 3000)
+            setIsSearch(true)
+            setPopularMovies([])
+            await fetchSearchMovies(query)
         }
     }
 
@@ -90,9 +101,8 @@ export default function MovieList() {
             {isLoading && <div className={styles.LoadingMessage}>Loading...</div>}
             <InfiniteScroll
                 dataLength={popularMovies.length}
-                next={fetchPopularMovies}
+                next={isSearch ? fetchSearchMovies : fetchPopularMovies}
                 hasMore={true}
-                loader={<div className={styles.LoadingIcon}></div>}
                 className={styles.MovieListContainer}
             >
                 {renderMovieList()}
