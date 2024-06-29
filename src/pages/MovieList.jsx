@@ -10,7 +10,6 @@ export default function MovieList() {
     const [currentPage, setCurrentPage] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
     const [hasError, setHasError] = useState(false)
-    let timeoutId = null
 
     useEffect(() => {
         fetchPopularMovies()
@@ -31,11 +30,7 @@ export default function MovieList() {
 
     const handleSearch = async (e) => {
         e.preventDefault()
-        const query = e.target.value
-
-        if (timeoutId) {
-            clearTimeout(timeoutId)
-        }
+        const query = e.target.value.trim()
 
         setSearchTerm(query)
 
@@ -45,20 +40,16 @@ export default function MovieList() {
         }
 
         if (query.length >= 3) {
-            timeoutId = setTimeout(async () => {
-                try {
-                    setIsLoading(true)
-                    const results = await searchMovie(query, 1)
-                    setPopularMovies(results.results)
-                    setCurrentPage(1)
-                    setIsLoading(false)
-                } catch (error) {
-                    console.error(error)
-                    setHasError(true)
-                } finally {
-                    timeoutId = null
-                }
-            }, 3000)
+            try {
+                setIsLoading(true)
+                const results = await searchMovie(query, 1)
+                setPopularMovies(results.results)
+                setCurrentPage(1)
+                setIsLoading(false)
+            } catch (error) {
+                console.error(error)
+                setHasError(true)
+            }
         }
     }
 
