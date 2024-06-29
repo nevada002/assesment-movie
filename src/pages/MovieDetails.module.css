@@ -83,3 +83,18 @@
     text-align: center;
     margin: 20px 0;
 }
+
+@media (max-width: 768px) {
+    .MovieDetailsContainer {
+        flex-direction: column;
+    }
+
+    .MovieDetailsPoster {
+        width: 100%;
+        margin-top: 0;
+    }
+
+    .MovieDetailsInfo {
+        margin-top: 20px;
+    }
+}
