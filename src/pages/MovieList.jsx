@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { getMovieList, searchMovie } from '../api'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import styles from './MovieList.module.css'
@@ -10,6 +10,8 @@ export default function MovieList() {
     const [currentPage, setCurrentPage] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
     const [hasError, setHasError] = useState(false)
+
+    const debouncedSearchTerm = useRef('')
 
     useEffect(() => {
         fetchPopularMovies()
@@ -30,26 +32,31 @@ export default function MovieList() {
 
     const handleSearch = async (e) => {
         e.preventDefault()
-        const query = e.target.value.trim()
+        const query = e.target.value
 
         setSearchTerm(query)
 
-        if (query.length < 3) {
+        clearTimeout(debouncedSearchTerm.current)
+
+        if (query.length === 0) {
             setPopularMovies([])
+            setCurrentPage(1)
             return fetchPopularMovies()
         }
 
         if (query.length >= 3) {
-            try {
-                setIsLoading(true)
-                const results = await searchMovie(query, 1)
-                setPopularMovies(results.results)
-                setCurrentPage(1)
-                setIsLoading(false)
-            } catch (error) {
-                console.error(error)
-                setHasError(true)
-            }
+            debouncedSearchTerm.current = setTimeout(async () => {
+                try {
+                    setIsLoading(true)
+                    const results = await searchMovie(query, 1)
+                    setPopularMovies(results.results)
+                    setCurrentPage(1)
+                    setIsLoading(false)
+                } catch (error) {
+                    console.error(error)
+                    setHasError(true)
+                }
+            }, 3000)
         }
     }
 
